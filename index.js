@@ -32,12 +32,51 @@ async function run() {
 
     const blogCollection = client.db('doodle').collection('blog');
     const commentCollection=client.db('doodle').collection('comment');
+    const favouriteCollection=client.db('doodle').collection('favourite');
    
     app.get("/blog", async (req, res) => {
       const cursor = blogCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    app.get("/fav", async (req, res) => {
+      const cursor = favouriteCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+
+    app.post('/blog', async(req,res)=>{
+      const newProduct = req.body;
+     console.log(newProduct);
+     const result = await blogCollection.insertOne(newProduct);
+     res.send(result);
+  })
+
+
+  app.post('/comment', async(req,res)=>{
+    const newProduct = req.body;
+   console.log(newProduct);
+   const result = await blogCollection.insertOne(newProduct);
+   res.send(result);
+})
+
+  //delete
+
+  app.delete("/blog/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await blogCollection.deleteOne(query);
+    res.send(result);
+  })
+
+  app.delete("/comment/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await blogCollection.deleteOne(query);
+    res.send(result);
+  })
 
     app.get("/blog/:id", async (req, res) => {
       const id=req.params.id;
@@ -58,10 +97,10 @@ async function run() {
 
 
     app.get("/comment/:id", async (req, res) => {
-      const id=req.params.id;
+      const blogId=req.params.blogId;
      
      const query={
-      _id : new ObjectId(id)
+      blogId : parseInt(blogId)
      }
      console.log(query)
       const result = await commentCollection.findOne(query) ;
